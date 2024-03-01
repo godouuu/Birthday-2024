@@ -1,6 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://crnv5o8nb1u1k"]
+[gd_scene load_steps=10 format=3 uid="uid://crnv5o8nb1u1k"]
 
 [ext_resource type="Script" path="res://Scripts/ScreenManagement/ScreenManager.gd" id="1_karo4"]
+[ext_resource type="Shader" path="res://MainScenes/TransitionShader.gdshader" id="2_5t015"]
+[ext_resource type="Texture2D" uid="uid://dg48cm1hlhuhh" path="res://Art/flip_wipe.png" id="3_2gifp"]
 
 [sub_resource type="Animation" id="Animation_tvgw8"]
 resource_name = "fade_in"
@@ -80,11 +82,73 @@ tracks/2/keys = {
 "values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
 }
 
+[sub_resource type="Animation" id="Animation_mm6di"]
+resource_name = "page_flip"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimationPlayer/ColorRect:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimationPlayer/ColorRect:material:shader_parameter/progress")
+tracks/1/interp = 1
+tracks/1/loop_wrap = false
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationPlayer/ColorRect:material:shader_parameter/invert")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+
+[sub_resource type="Animation" id="Animation_2n5dx"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimationPlayer/ColorRect:material:shader_parameter/progress")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_yu6cb"]
 _data = {
+"RESET": SubResource("Animation_2n5dx"),
 "fade_in": SubResource("Animation_tvgw8"),
-"fade_out": SubResource("Animation_x8lmn")
+"fade_out": SubResource("Animation_x8lmn"),
+"page_flip": SubResource("Animation_mm6di")
 }
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ye1ng"]
+shader = ExtResource("2_5t015")
+shader_parameter/progress = 0.0
+shader_parameter/invert = true
+shader_parameter/transition_effect = ExtResource("3_2gifp")
 
 [node name="ScreenMngrInitScene" type="Node2D" node_paths=PackedStringArray("popupRoot")]
 script = ExtResource("1_karo4")
@@ -111,9 +175,9 @@ libraries = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="TransitionLayer/AnimationPlayer"]
-visible = false
-modulate = Color(0, 0, 0, 0)
-self_modulate = Color(0, 0, 0, 0)
+modulate = Color(0, 0, 0, 1)
+self_modulate = Color(0, 0, 0, 1)
+material = SubResource("ShaderMaterial_ye1ng")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
